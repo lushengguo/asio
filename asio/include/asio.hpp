@@ -12,7 +12,7 @@
 #define ASIO_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/any_completion_executor.hpp"
@@ -52,12 +52,12 @@
 #include "asio/bind_immediate_executor.hpp"
 #include "asio/buffer.hpp"
 #include "asio/buffer_registration.hpp"
-#include "asio/buffered_read_stream_fwd.hpp"
 #include "asio/buffered_read_stream.hpp"
-#include "asio/buffered_stream_fwd.hpp"
+#include "asio/buffered_read_stream_fwd.hpp"
 #include "asio/buffered_stream.hpp"
-#include "asio/buffered_write_stream_fwd.hpp"
+#include "asio/buffered_stream_fwd.hpp"
 #include "asio/buffered_write_stream.hpp"
+#include "asio/buffered_write_stream_fwd.hpp"
 #include "asio/buffers_iterator.hpp"
 #include "asio/cancel_after.hpp"
 #include "asio/cancel_at.hpp"
@@ -74,9 +74,9 @@
 #include "asio/consign.hpp"
 #include "asio/coroutine.hpp"
 #include "asio/deadline_timer.hpp"
+#include "asio/default_completion_token.hpp"
 #include "asio/defer.hpp"
 #include "asio/deferred.hpp"
-#include "asio/default_completion_token.hpp"
 #include "asio/detached.hpp"
 #include "asio/dispatch.hpp"
 #include "asio/error.hpp"
@@ -117,8 +117,6 @@
 #include "asio/ip/address_v6.hpp"
 #include "asio/ip/address_v6_iterator.hpp"
 #include "asio/ip/address_v6_range.hpp"
-#include "asio/ip/network_v4.hpp"
-#include "asio/ip/network_v6.hpp"
 #include "asio/ip/bad_address_cast.hpp"
 #include "asio/ip/basic_endpoint.hpp"
 #include "asio/ip/basic_resolver.hpp"
@@ -128,6 +126,8 @@
 #include "asio/ip/host_name.hpp"
 #include "asio/ip/icmp.hpp"
 #include "asio/ip/multicast.hpp"
+#include "asio/ip/network_v4.hpp"
+#include "asio/ip/network_v6.hpp"
 #include "asio/ip/resolver_base.hpp"
 #include "asio/ip/resolver_query_base.hpp"
 #include "asio/ip/tcp.hpp"

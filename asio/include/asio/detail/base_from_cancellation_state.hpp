@@ -12,148 +12,125 @@
 #define ASIO_DETAIL_BASE_FROM_CANCELLATION_STATE_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
-#include "asio/detail/config.hpp"
 #include "asio/associated_cancellation_slot.hpp"
 #include "asio/cancellation_state.hpp"
+#include "asio/detail/config.hpp"
 #include "asio/detail/type_traits.hpp"
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace detail {
-
-template <typename Handler, typename = void>
-class base_from_cancellation_state
+namespace asio
 {
-public:
-  typedef cancellation_slot cancellation_slot_type;
+namespace detail
+{
 
-  cancellation_slot_type get_cancellation_slot() const noexcept
-  {
-    return cancellation_state_.slot();
-  }
+template <typename Handler, typename = void> class base_from_cancellation_state
+{
+  public:
+    typedef cancellation_slot cancellation_slot_type;
 
-  cancellation_state get_cancellation_state() const noexcept
-  {
-    return cancellation_state_;
-  }
+    cancellation_slot_type get_cancellation_slot() const noexcept
+    {
+        return cancellation_state_.slot();
+    }
 
-protected:
-  explicit base_from_cancellation_state(const Handler& handler)
-    : cancellation_state_(
-        asio::get_associated_cancellation_slot(handler))
-  {
-  }
+    cancellation_state get_cancellation_state() const noexcept
+    {
+        return cancellation_state_;
+    }
 
-  template <typename Filter>
-  base_from_cancellation_state(const Handler& handler, Filter filter)
-    : cancellation_state_(
-        asio::get_associated_cancellation_slot(handler), filter, filter)
-  {
-  }
+  protected:
+    explicit base_from_cancellation_state(const Handler &handler)
+        : cancellation_state_(asio::get_associated_cancellation_slot(handler))
+    {
+    }
 
-  template <typename InFilter, typename OutFilter>
-  base_from_cancellation_state(const Handler& handler,
-      InFilter&& in_filter,
-      OutFilter&& out_filter)
-    : cancellation_state_(
-        asio::get_associated_cancellation_slot(handler),
-        static_cast<InFilter&&>(in_filter),
-        static_cast<OutFilter&&>(out_filter))
-  {
-  }
+    template <typename Filter>
+    base_from_cancellation_state(const Handler &handler, Filter filter)
+        : cancellation_state_(asio::get_associated_cancellation_slot(handler), filter, filter)
+    {
+    }
 
-  void reset_cancellation_state(const Handler& handler)
-  {
-    cancellation_state_ = cancellation_state(
-        asio::get_associated_cancellation_slot(handler));
-  }
+    template <typename InFilter, typename OutFilter>
+    base_from_cancellation_state(const Handler &handler, InFilter &&in_filter, OutFilter &&out_filter)
+        : cancellation_state_(asio::get_associated_cancellation_slot(handler), static_cast<InFilter &&>(in_filter),
+                              static_cast<OutFilter &&>(out_filter))
+    {
+    }
 
-  template <typename Filter>
-  void reset_cancellation_state(const Handler& handler, Filter filter)
-  {
-    cancellation_state_ = cancellation_state(
-        asio::get_associated_cancellation_slot(handler), filter, filter);
-  }
+    void reset_cancellation_state(const Handler &handler)
+    {
+        cancellation_state_ = cancellation_state(asio::get_associated_cancellation_slot(handler));
+    }
 
-  template <typename InFilter, typename OutFilter>
-  void reset_cancellation_state(const Handler& handler,
-      InFilter&& in_filter,
-      OutFilter&& out_filter)
-  {
-    cancellation_state_ = cancellation_state(
-        asio::get_associated_cancellation_slot(handler),
-        static_cast<InFilter&&>(in_filter),
-        static_cast<OutFilter&&>(out_filter));
-  }
+    template <typename Filter> void reset_cancellation_state(const Handler &handler, Filter filter)
+    {
+        cancellation_state_ = cancellation_state(asio::get_associated_cancellation_slot(handler), filter, filter);
+    }
 
-  cancellation_type_t cancelled() const noexcept
-  {
-    return cancellation_state_.cancelled();
-  }
+    template <typename InFilter, typename OutFilter>
+    void reset_cancellation_state(const Handler &handler, InFilter &&in_filter, OutFilter &&out_filter)
+    {
+        cancellation_state_ =
+            cancellation_state(asio::get_associated_cancellation_slot(handler), static_cast<InFilter &&>(in_filter),
+                               static_cast<OutFilter &&>(out_filter));
+    }
 
-private:
-  cancellation_state cancellation_state_;
+    cancellation_type_t cancelled() const noexcept
+    {
+        return cancellation_state_.cancelled();
+    }
+
+  private:
+    cancellation_state cancellation_state_;
 };
 
 template <typename Handler>
-class base_from_cancellation_state<Handler,
-    enable_if_t<
-      is_same<
-        typename associated_cancellation_slot<
-          Handler, cancellation_slot
-        >::asio_associated_cancellation_slot_is_unspecialised,
-        void
-      >::value
-    >
-  >
+class base_from_cancellation_state<
+    Handler, enable_if_t<is_same<typename associated_cancellation_slot<
+                                     Handler, cancellation_slot>::asio_associated_cancellation_slot_is_unspecialised,
+                                 void>::value>>
 {
-public:
-  cancellation_state get_cancellation_state() const noexcept
-  {
-    return cancellation_state();
-  }
+  public:
+    cancellation_state get_cancellation_state() const noexcept
+    {
+        return cancellation_state();
+    }
 
-protected:
-  explicit base_from_cancellation_state(const Handler&)
-  {
-  }
+  protected:
+    explicit base_from_cancellation_state(const Handler &)
+    {
+    }
 
-  template <typename Filter>
-  base_from_cancellation_state(const Handler&, Filter)
-  {
-  }
+    template <typename Filter> base_from_cancellation_state(const Handler &, Filter)
+    {
+    }
 
-  template <typename InFilter, typename OutFilter>
-  base_from_cancellation_state(const Handler&,
-      InFilter&&,
-      OutFilter&&)
-  {
-  }
+    template <typename InFilter, typename OutFilter>
+    base_from_cancellation_state(const Handler &, InFilter &&, OutFilter &&)
+    {
+    }
 
-  void reset_cancellation_state(const Handler&)
-  {
-  }
+    void reset_cancellation_state(const Handler &)
+    {
+    }
 
-  template <typename Filter>
-  void reset_cancellation_state(const Handler&, Filter)
-  {
-  }
+    template <typename Filter> void reset_cancellation_state(const Handler &, Filter)
+    {
+    }
 
-  template <typename InFilter, typename OutFilter>
-  void reset_cancellation_state(const Handler&,
-      InFilter&&,
-      OutFilter&&)
-  {
-  }
+    template <typename InFilter, typename OutFilter>
+    void reset_cancellation_state(const Handler &, InFilter &&, OutFilter &&)
+    {
+    }
 
-  constexpr cancellation_type_t cancelled() const noexcept
-  {
-    return cancellation_type::none;
-  }
+    constexpr cancellation_type_t cancelled() const noexcept
+    {
+        return cancellation_type::none;
+    }
 };
 
 } // namespace detail

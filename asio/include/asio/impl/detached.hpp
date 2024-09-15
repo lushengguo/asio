@@ -12,20 +12,22 @@
 #define ASIO_IMPL_DETACHED_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
-#include "asio/detail/config.hpp"
 #include "asio/async_result.hpp"
+#include "asio/detail/config.hpp"
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace detail {
+namespace asio
+{
+namespace detail
+{
 
-  // Class to adapt a detached_t as a completion handler.
-  class detached_handler
-  {
+// Class to adapt a detached_t as a completion handler.
+class detached_handler
+{
   public:
     typedef void result_type;
 
@@ -33,39 +35,34 @@ namespace detail {
     {
     }
 
-    template <typename... Args>
-    void operator()(Args...)
+    template <typename... Args> void operator()(Args...)
     {
     }
-  };
+};
 
 } // namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-template <typename... Signatures>
-struct async_result<detached_t, Signatures...>
+template <typename... Signatures> struct async_result<detached_t, Signatures...>
 {
-  typedef asio::detail::detached_handler completion_handler_type;
+    typedef asio::detail::detached_handler completion_handler_type;
 
-  typedef void return_type;
+    typedef void return_type;
 
-  explicit async_result(completion_handler_type&)
-  {
-  }
+    explicit async_result(completion_handler_type &)
+    {
+    }
 
-  void get()
-  {
-  }
+    void get()
+    {
+    }
 
-  template <typename Initiation, typename RawCompletionToken, typename... Args>
-  static return_type initiate(Initiation&& initiation,
-      RawCompletionToken&&, Args&&... args)
-  {
-    static_cast<Initiation&&>(initiation)(
-        detail::detached_handler(detached_t()),
-        static_cast<Args&&>(args)...);
-  }
+    template <typename Initiation, typename RawCompletionToken, typename... Args>
+    static return_type initiate(Initiation &&initiation, RawCompletionToken &&, Args &&...args)
+    {
+        static_cast<Initiation &&>(initiation)(detail::detached_handler(detached_t()), static_cast<Args &&>(args)...);
+    }
 };
 
 #endif // !defined(GENERATING_DOCUMENTATION)

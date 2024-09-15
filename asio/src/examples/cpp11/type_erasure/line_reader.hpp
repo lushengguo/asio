@@ -18,31 +18,31 @@
 
 class line_reader
 {
-private:
-  virtual void async_read_line_impl(std::string prompt,
-      asio::any_completion_handler<void(std::error_code, std::string)> handler) = 0;
+  private:
+    virtual void async_read_line_impl(std::string prompt,
+                                      asio::any_completion_handler<void(std::error_code, std::string)> handler) = 0;
 
-  struct initiate_read_line
-  {
-    template <typename Handler>
-    void operator()(Handler handler, line_reader* self, std::string prompt)
+    struct initiate_read_line
     {
-      self->async_read_line_impl(std::move(prompt), std::move(handler));
+        template <typename Handler> void operator()(Handler handler, line_reader *self, std::string prompt)
+        {
+            self->async_read_line_impl(std::move(prompt), std::move(handler));
+        }
+    };
+
+  public:
+    virtual ~line_reader()
+    {
     }
-  };
 
-public:
-  virtual ~line_reader() {}
-
-  template <typename CompletionToken>
-  auto async_read_line(std::string prompt, CompletionToken&& token)
-    -> decltype(
-        asio::async_initiate<CompletionToken, void(std::error_code, std::string)>(
-          initiate_read_line(), token, this, prompt))
-  {
-    return asio::async_initiate<CompletionToken, void(std::error_code, std::string)>(
-        initiate_read_line(), token, this, prompt);
-  }
+    template <typename CompletionToken>
+    auto async_read_line(std::string prompt, CompletionToken &&token)
+        -> decltype(asio::async_initiate<CompletionToken, void(std::error_code, std::string)>(initiate_read_line(),
+                                                                                              token, this, prompt))
+    {
+        return asio::async_initiate<CompletionToken, void(std::error_code, std::string)>(initiate_read_line(), token,
+                                                                                         this, prompt);
+    }
 };
 
 #endif // LINE_READER_HPP

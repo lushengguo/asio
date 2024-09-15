@@ -12,7 +12,7 @@
 #define ASIO_SSL_DETAIL_WRITE_OP_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -22,49 +22,45 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace ssl {
-namespace detail {
-
-template <typename ConstBufferSequence>
-class write_op
+namespace asio
 {
-public:
-  static constexpr const char* tracking_name()
-  {
-    return "ssl::stream<>::async_write_some";
-  }
+namespace ssl
+{
+namespace detail
+{
 
-  write_op(const ConstBufferSequence& buffers)
-    : buffers_(buffers)
-  {
-  }
+template <typename ConstBufferSequence> class write_op
+{
+  public:
+    static constexpr const char *tracking_name()
+    {
+        return "ssl::stream<>::async_write_some";
+    }
 
-  engine::want operator()(engine& eng,
-      asio::error_code& ec,
-      std::size_t& bytes_transferred) const
-  {
-    unsigned char storage[
-      asio::detail::buffer_sequence_adapter<asio::const_buffer,
-        ConstBufferSequence>::linearisation_storage_size];
+    write_op(const ConstBufferSequence &buffers) : buffers_(buffers)
+    {
+    }
 
-    asio::const_buffer buffer =
-      asio::detail::buffer_sequence_adapter<asio::const_buffer,
-        ConstBufferSequence>::linearise(buffers_, asio::buffer(storage));
+    engine::want operator()(engine &eng, asio::error_code &ec, std::size_t &bytes_transferred) const
+    {
+        unsigned char storage[asio::detail::buffer_sequence_adapter<asio::const_buffer,
+                                                                    ConstBufferSequence>::linearisation_storage_size];
 
-    return eng.write(buffer, ec, bytes_transferred);
-  }
+        asio::const_buffer buffer =
+            asio::detail::buffer_sequence_adapter<asio::const_buffer, ConstBufferSequence>::linearise(
+                buffers_, asio::buffer(storage));
 
-  template <typename Handler>
-  void call_handler(Handler& handler,
-      const asio::error_code& ec,
-      const std::size_t& bytes_transferred) const
-  {
-    static_cast<Handler&&>(handler)(ec, bytes_transferred);
-  }
+        return eng.write(buffer, ec, bytes_transferred);
+    }
 
-private:
-  ConstBufferSequence buffers_;
+    template <typename Handler>
+    void call_handler(Handler &handler, const asio::error_code &ec, const std::size_t &bytes_transferred) const
+    {
+        static_cast<Handler &&>(handler)(ec, bytes_transferred);
+    }
+
+  private:
+    ConstBufferSequence buffers_;
 };
 
 } // namespace detail

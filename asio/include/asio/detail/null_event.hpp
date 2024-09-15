@@ -12,7 +12,7 @@
 #define ASIO_DETAIL_NULL_EVENT_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -20,78 +20,71 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace detail {
-
-class null_event
-  : private noncopyable
+namespace asio
 {
-public:
-  // Constructor.
-  null_event()
-  {
-  }
+namespace detail
+{
 
-  // Destructor.
-  ~null_event()
-  {
-  }
+class null_event : private noncopyable
+{
+  public:
+    // Constructor.
+    null_event()
+    {
+    }
 
-  // Signal the event. (Retained for backward compatibility.)
-  template <typename Lock>
-  void signal(Lock&)
-  {
-  }
+    // Destructor.
+    ~null_event()
+    {
+    }
 
-  // Signal all waiters.
-  template <typename Lock>
-  void signal_all(Lock&)
-  {
-  }
+    // Signal the event. (Retained for backward compatibility.)
+    template <typename Lock> void signal(Lock &)
+    {
+    }
 
-  // Unlock the mutex and signal one waiter.
-  template <typename Lock>
-  void unlock_and_signal_one(Lock&)
-  {
-  }
+    // Signal all waiters.
+    template <typename Lock> void signal_all(Lock &)
+    {
+    }
 
-  // Unlock the mutex and signal one waiter who may destroy us.
-  template <typename Lock>
-  void unlock_and_signal_one_for_destruction(Lock&)
-  {
-  }
+    // Unlock the mutex and signal one waiter.
+    template <typename Lock> void unlock_and_signal_one(Lock &)
+    {
+    }
 
-  // If there's a waiter, unlock the mutex and signal it.
-  template <typename Lock>
-  bool maybe_unlock_and_signal_one(Lock&)
-  {
-    return false;
-  }
+    // Unlock the mutex and signal one waiter who may destroy us.
+    template <typename Lock> void unlock_and_signal_one_for_destruction(Lock &)
+    {
+    }
 
-  // Reset the event.
-  template <typename Lock>
-  void clear(Lock&)
-  {
-  }
+    // If there's a waiter, unlock the mutex and signal it.
+    template <typename Lock> bool maybe_unlock_and_signal_one(Lock &)
+    {
+        return false;
+    }
 
-  // Wait for the event to become signalled.
-  template <typename Lock>
-  void wait(Lock&)
-  {
-    do_wait();
-  }
+    // Reset the event.
+    template <typename Lock> void clear(Lock &)
+    {
+    }
 
-  // Timed wait for the event to become signalled.
-  template <typename Lock>
-  bool wait_for_usec(Lock&, long usec)
-  {
-    do_wait_for_usec(usec);
-    return true;
-  }
+    // Wait for the event to become signalled.
+    template <typename Lock> void wait(Lock &)
+    {
+        do_wait();
+    }
 
-private:
-  ASIO_DECL static void do_wait();
-  ASIO_DECL static void do_wait_for_usec(long usec);
+    // Timed wait for the event to become signalled.
+    template <typename Lock> bool wait_for_usec(Lock &, long usec)
+    {
+        do_wait_for_usec(usec);
+        return true;
+    }
+
+  private:
+    ASIO_DECL static void do_wait();
+    ASIO_DECL static void do_wait_for_usec(long usec);
 };
 
 } // namespace detail
@@ -100,7 +93,7 @@ private:
 #include "asio/detail/pop_options.hpp"
 
 #if defined(ASIO_HEADER_ONLY)
-# include "asio/detail/impl/null_event.ipp"
+#include "asio/detail/impl/null_event.ipp"
 #endif // defined(ASIO_HEADER_ONLY)
 
 #endif // ASIO_DETAIL_NULL_EVENT_HPP

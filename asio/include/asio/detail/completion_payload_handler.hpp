@@ -12,64 +12,59 @@
 #define ASIO_DETAIL_COMPLETION_PAYLOAD_HANDLER_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
-#include "asio/detail/config.hpp"
 #include "asio/associator.hpp"
+#include "asio/detail/config.hpp"
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace detail {
-
-template <typename Payload, typename Handler>
-class completion_payload_handler
+namespace asio
 {
-public:
-  completion_payload_handler(Payload&& p, Handler& h)
-    : payload_(static_cast<Payload&&>(p)),
-      handler_(static_cast<Handler&&>(h))
-  {
-  }
+namespace detail
+{
 
-  void operator()()
-  {
-    payload_.receive(handler_);
-  }
+template <typename Payload, typename Handler> class completion_payload_handler
+{
+  public:
+    completion_payload_handler(Payload &&p, Handler &h)
+        : payload_(static_cast<Payload &&>(p)), handler_(static_cast<Handler &&>(h))
+    {
+    }
 
-  Handler& handler()
-  {
-    return handler_;
-  }
+    void operator()()
+    {
+        payload_.receive(handler_);
+    }
 
-//private:
-  Payload payload_;
-  Handler handler_;
+    Handler &handler()
+    {
+        return handler_;
+    }
+
+    // private:
+    Payload payload_;
+    Handler handler_;
 };
 
 } // namespace detail
 
-template <template <typename, typename> class Associator,
-    typename Payload, typename Handler, typename DefaultCandidate>
-struct associator<Associator,
-    detail::completion_payload_handler<Payload, Handler>,
-    DefaultCandidate>
-  : Associator<Handler, DefaultCandidate>
+template <template <typename, typename> class Associator, typename Payload, typename Handler, typename DefaultCandidate>
+struct associator<Associator, detail::completion_payload_handler<Payload, Handler>, DefaultCandidate>
+    : Associator<Handler, DefaultCandidate>
 {
-  static typename Associator<Handler, DefaultCandidate>::type get(
-      const detail::completion_payload_handler<Payload, Handler>& h) noexcept
-  {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_);
-  }
+    static typename Associator<Handler, DefaultCandidate>::type get(
+        const detail::completion_payload_handler<Payload, Handler> &h) noexcept
+    {
+        return Associator<Handler, DefaultCandidate>::get(h.handler_);
+    }
 
-  static auto get(
-      const detail::completion_payload_handler<Payload, Handler>& h,
-      const DefaultCandidate& c) noexcept
-    -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
-  {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
-  }
+    static auto get(const detail::completion_payload_handler<Payload, Handler> &h, const DefaultCandidate &c) noexcept
+        -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
+    {
+        return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
+    }
 };
 
 } // namespace asio

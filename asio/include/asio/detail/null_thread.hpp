@@ -12,7 +12,7 @@
 #define ASIO_DETAIL_NULL_THREAD_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -25,36 +25,35 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace detail {
-
-class null_thread
-  : private noncopyable
+namespace asio
 {
-public:
-  // Constructor.
-  template <typename Function>
-  null_thread(Function, unsigned int = 0)
-  {
-    asio::detail::throw_error(
-        asio::error::operation_not_supported, "thread");
-  }
+namespace detail
+{
 
-  // Destructor.
-  ~null_thread()
-  {
-  }
+class null_thread : private noncopyable
+{
+  public:
+    // Constructor.
+    template <typename Function> null_thread(Function, unsigned int = 0)
+    {
+        asio::detail::throw_error(asio::error::operation_not_supported, "thread");
+    }
 
-  // Wait for the thread to exit.
-  void join()
-  {
-  }
+    // Destructor.
+    ~null_thread()
+    {
+    }
 
-  // Get number of CPUs.
-  static std::size_t hardware_concurrency()
-  {
-    return 1;
-  }
+    // Wait for the thread to exit.
+    void join()
+    {
+    }
+
+    // Get number of CPUs.
+    static std::size_t hardware_concurrency()
+    {
+        return 1;
+    }
 };
 
 } // namespace detail

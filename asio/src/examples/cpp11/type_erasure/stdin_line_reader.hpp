@@ -16,15 +16,15 @@
 
 class stdin_line_reader : public line_reader
 {
-public:
-  explicit stdin_line_reader(asio::any_io_executor ex);
+  public:
+    explicit stdin_line_reader(asio::any_io_executor ex);
 
-private:
-  void async_read_line_impl(std::string prompt,
-      asio::any_completion_handler<void(std::error_code, std::string)> handler) override;
+  private:
+    void async_read_line_impl(std::string prompt,
+                              asio::any_completion_handler<void(std::error_code, std::string)> handler) override;
 
-  asio::posix::stream_descriptor stdin_;
-  std::string buffer_;
+    asio::posix::stream_descriptor stdin_;
+    std::string buffer_;
 };
 
 #endif
