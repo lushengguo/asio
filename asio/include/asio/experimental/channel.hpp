@@ -12,7 +12,7 @@
 #define ASIO_EXPERIMENTAL_CHANNEL_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -25,42 +25,39 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace experimental {
-namespace detail {
+namespace asio
+{
+namespace experimental
+{
+namespace detail
+{
 
 template <typename ExecutorOrSignature, typename = void>
 struct channel_type
 {
-  template <typename... Signatures>
-  struct inner
-  {
-    typedef basic_channel<any_io_executor, channel_traits<>,
-        ExecutorOrSignature, Signatures...> type;
-  };
+    template <typename... Signatures>
+    struct inner
+    {
+        typedef basic_channel<any_io_executor, channel_traits<>, ExecutorOrSignature, Signatures...> type;
+    };
 };
 
 template <typename ExecutorOrSignature>
-struct channel_type<ExecutorOrSignature,
-    enable_if_t<
-      is_executor<ExecutorOrSignature>::value
-        || execution::is_executor<ExecutorOrSignature>::value
-    >>
+struct channel_type<ExecutorOrSignature, enable_if_t<is_executor<ExecutorOrSignature>::value ||
+                                                     execution::is_executor<ExecutorOrSignature>::value>>
 {
-  template <typename... Signatures>
-  struct inner
-  {
-    typedef basic_channel<ExecutorOrSignature,
-        channel_traits<>, Signatures...> type;
-  };
+    template <typename... Signatures>
+    struct inner
+    {
+        typedef basic_channel<ExecutorOrSignature, channel_traits<>, Signatures...> type;
+    };
 };
 
 } // namespace detail
 
 /// Template type alias for common use of channel.
 template <typename ExecutorOrSignature, typename... Signatures>
-using channel = typename detail::channel_type<
-    ExecutorOrSignature>::template inner<Signatures...>::type;
+using channel = typename detail::channel_type<ExecutorOrSignature>::template inner<Signatures...>::type;
 
 } // namespace experimental
 } // namespace asio

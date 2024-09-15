@@ -12,14 +12,15 @@
 #define ASIO_HANDLER_CONTINUATION_HOOK_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio
+{
 
 /// Default continuation function for handlers.
 /**
@@ -44,7 +45,7 @@ namespace asio {
  */
 inline bool asio_handler_is_continuation(...)
 {
-  return false;
+    return false;
 }
 
 } // namespace asio

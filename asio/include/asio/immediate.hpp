@@ -12,7 +12,7 @@
 #define ASIO_IMMEDIATE_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -22,36 +22,36 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace detail {
+namespace asio
+{
+namespace detail
+{
 
 template <typename Executor>
 class initiate_immediate
 {
-public:
-  typedef Executor executor_type;
+  public:
+    typedef Executor executor_type;
 
-  explicit initiate_immediate(const Executor& ex)
-    : ex_(ex)
-  {
-  }
+    explicit initiate_immediate(const Executor &ex) : ex_(ex)
+    {
+    }
 
-  executor_type get_executor() const noexcept
-  {
-    return ex_;
-  }
+    executor_type get_executor() const noexcept
+    {
+        return ex_;
+    }
 
-  template <typename CompletionHandler>
-  void operator()(CompletionHandler&& handler) const
-  {
-    typename associated_immediate_executor<
-      CompletionHandler, executor_type>::type ex =
-        (get_associated_immediate_executor)(handler, ex_);
-    (dispatch)(ex, static_cast<CompletionHandler&&>(handler));
-  }
+    template <typename CompletionHandler>
+    void operator()(CompletionHandler &&handler) const
+    {
+        typename associated_immediate_executor<CompletionHandler, executor_type>::type ex =
+            (get_associated_immediate_executor)(handler, ex_);
+        (dispatch)(ex, static_cast<CompletionHandler &&>(handler));
+    }
 
-private:
-  Executor ex_;
+  private:
+    Executor ex_;
 };
 
 } // namespace detail
@@ -76,22 +76,14 @@ private:
  * @par Completion Signature
  * @code void() @endcode
  */
-template <typename Executor,
-    ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken
-      = default_completion_token_t<Executor>>
-inline auto async_immediate(const Executor& ex,
-    NullaryToken&& token = default_completion_token_t<Executor>(),
-    constraint_t<
-      (execution::is_executor<Executor>::value
-          && can_require<Executor, execution::blocking_t::never_t>::value)
-        || is_executor<Executor>::value
-    > = 0)
-  -> decltype(
-    async_initiate<NullaryToken, void()>(
-      declval<detail::initiate_immediate<Executor>>(), token))
+template <typename Executor, ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken = default_completion_token_t<Executor>>
+inline auto async_immediate(const Executor &ex, NullaryToken &&token = default_completion_token_t<Executor>(),
+                            constraint_t<(execution::is_executor<Executor>::value &&
+                                          can_require<Executor, execution::blocking_t::never_t>::value) ||
+                                         is_executor<Executor>::value> = 0)
+    -> decltype(async_initiate<NullaryToken, void()>(declval<detail::initiate_immediate<Executor>>(), token))
 {
-  return async_initiate<NullaryToken, void()>(
-      detail::initiate_immediate<Executor>(ex), token);
+    return async_initiate<NullaryToken, void()>(detail::initiate_immediate<Executor>(ex), token);
 }
 
 /// Launch a trivial asynchronous operation that completes immediately.
@@ -115,24 +107,17 @@ inline auto async_immediate(const Executor& ex,
  * @par Completion Signature
  * @code void() @endcode
  */
-template <typename ExecutionContext,
-    ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken
-      = default_completion_token_t<typename ExecutionContext::executor_type>>
-inline auto async_immediate(ExecutionContext& ctx,
-    NullaryToken&& token = default_completion_token_t<
-      typename ExecutionContext::executor_type>(),
-    constraint_t<
-      is_convertible<ExecutionContext&, execution_context&>::value
-    > = 0)
-  -> decltype(
-    async_initiate<NullaryToken, void()>(
-      declval<detail::initiate_immediate<
-        typename ExecutionContext::executor_type>>(), token))
+template <typename ExecutionContext, ASIO_COMPLETION_TOKEN_FOR(void()) NullaryToken =
+                                         default_completion_token_t<typename ExecutionContext::executor_type>>
+inline auto async_immediate(
+    ExecutionContext &ctx,
+    NullaryToken &&token = default_completion_token_t<typename ExecutionContext::executor_type>(),
+    constraint_t<is_convertible<ExecutionContext &, execution_context &>::value> = 0)
+    -> decltype(async_initiate<NullaryToken, void()>(
+        declval<detail::initiate_immediate<typename ExecutionContext::executor_type>>(), token))
 {
-  return async_initiate<NullaryToken, void()>(
-      detail::initiate_immediate<
-        typename ExecutionContext::executor_type>(
-          ctx.get_executor()), token);
+    return async_initiate<NullaryToken, void()>(
+        detail::initiate_immediate<typename ExecutionContext::executor_type>(ctx.get_executor()), token);
 }
 
 } // namespace asio

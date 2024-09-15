@@ -12,14 +12,16 @@
 #define ASIO_DETAIL_UTILITY_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
 #include <utility>
 
-namespace asio {
-namespace detail {
+namespace asio
+{
+namespace detail
+{
 
 #if defined(ASIO_HAS_STD_INDEX_SEQUENCE)
 
@@ -40,22 +42,19 @@ struct join_index_sequences;
 template <std::size_t... I, std::size_t... J>
 struct join_index_sequences<index_sequence<I...>, index_sequence<J...>>
 {
-  using type = index_sequence<I..., J...>;
+    using type = index_sequence<I..., J...>;
 };
 
 template <std::size_t First, std::size_t Last>
-struct index_pack :
-  join_index_sequences<
-    typename index_pack<First, First + (Last - First + 1) / 2 - 1>::type,
-    typename index_pack<First + (Last - First + 1) / 2, Last>::type
-  >
+struct index_pack : join_index_sequences<typename index_pack<First, First + (Last - First + 1) / 2 - 1>::type,
+                                         typename index_pack<First + (Last - First + 1) / 2, Last>::type>
 {
 };
 
 template <std::size_t N>
 struct index_pack<N, N>
 {
-  using type = index_sequence<N>;
+    using type = index_sequence<N>;
 };
 
 template <std::size_t Begin, std::size_t End>
@@ -66,7 +65,7 @@ struct index_range : index_pack<Begin, End - 1>
 template <std::size_t N>
 struct index_range<N, N>
 {
-  using type = index_sequence<>;
+    using type = index_sequence<>;
 };
 
 template <typename... T>

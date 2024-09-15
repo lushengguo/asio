@@ -12,7 +12,7 @@
 #define ASIO_SSL_HOST_NAME_VERIFICATION_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -23,8 +23,10 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace ssl {
+namespace asio
+{
+namespace ssl
+{
 
 /// Verifies a certificate against a host_name according to the rules described
 /// in RFC 6125.
@@ -59,23 +61,22 @@ namespace ssl {
  */
 class host_name_verification
 {
-public:
-  /// The type of the function object's result.
-  typedef bool result_type;
+  public:
+    /// The type of the function object's result.
+    typedef bool result_type;
 
-  /// Constructor.
-  explicit host_name_verification(const std::string& host)
-    : host_(host)
-  {
-  }
+    /// Constructor.
+    explicit host_name_verification(const std::string &host) : host_(host)
+    {
+    }
 
-  /// Perform certificate verification.
-  ASIO_DECL bool operator()(bool preverified, verify_context& ctx) const;
+    /// Perform certificate verification.
+    ASIO_DECL bool operator()(bool preverified, verify_context &ctx) const;
 
-private:
-  // Helper function to check a host name against an IPv4 address
-  // The host name to be checked.
-  std::string host_;
+  private:
+    // Helper function to check a host name against an IPv4 address
+    // The host name to be checked.
+    std::string host_;
 };
 
 } // namespace ssl
@@ -84,7 +85,7 @@ private:
 #include "asio/detail/pop_options.hpp"
 
 #if defined(ASIO_HEADER_ONLY)
-# include "asio/ssl/impl/host_name_verification.ipp"
+#include "asio/ssl/impl/host_name_verification.ipp"
 #endif // defined(ASIO_HEADER_ONLY)
 
 #endif // ASIO_SSL_HOST_NAME_VERIFICATION_HPP

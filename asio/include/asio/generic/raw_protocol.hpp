@@ -12,7 +12,7 @@
 #define ASIO_GENERIC_RAW_PROTOCOL_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -25,8 +25,10 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace generic {
+namespace asio
+{
+namespace generic
+{
 
 /// Encapsulates the flags needed for a generic raw socket.
 /**
@@ -48,69 +50,66 @@ namespace generic {
  */
 class raw_protocol
 {
-public:
-  /// Construct a protocol object for a specific address family and protocol.
-  raw_protocol(int address_family, int socket_protocol)
-    : family_(address_family),
-      protocol_(socket_protocol)
-  {
-  }
-
-  /// Construct a generic protocol object from a specific protocol.
-  /**
-   * @throws @c bad_cast Thrown if the source protocol is not raw-oriented.
-   */
-  template <typename Protocol>
-  raw_protocol(const Protocol& source_protocol)
-    : family_(source_protocol.family()),
-      protocol_(source_protocol.protocol())
-  {
-    if (source_protocol.type() != type())
+  public:
+    /// Construct a protocol object for a specific address family and protocol.
+    raw_protocol(int address_family, int socket_protocol) : family_(address_family), protocol_(socket_protocol)
     {
-      std::bad_cast ex;
-      asio::detail::throw_exception(ex);
     }
-  }
 
-  /// Obtain an identifier for the type of the protocol.
-  int type() const noexcept
-  {
-    return ASIO_OS_DEF(SOCK_RAW);
-  }
+    /// Construct a generic protocol object from a specific protocol.
+    /**
+     * @throws @c bad_cast Thrown if the source protocol is not raw-oriented.
+     */
+    template <typename Protocol>
+    raw_protocol(const Protocol &source_protocol)
+        : family_(source_protocol.family()), protocol_(source_protocol.protocol())
+    {
+        if (source_protocol.type() != type())
+        {
+            std::bad_cast ex;
+            asio::detail::throw_exception(ex);
+        }
+    }
 
-  /// Obtain an identifier for the protocol.
-  int protocol() const noexcept
-  {
-    return protocol_;
-  }
+    /// Obtain an identifier for the type of the protocol.
+    int type() const noexcept
+    {
+        return ASIO_OS_DEF(SOCK_RAW);
+    }
 
-  /// Obtain an identifier for the protocol family.
-  int family() const noexcept
-  {
-    return family_;
-  }
+    /// Obtain an identifier for the protocol.
+    int protocol() const noexcept
+    {
+        return protocol_;
+    }
 
-  /// Compare two protocols for equality.
-  friend bool operator==(const raw_protocol& p1, const raw_protocol& p2)
-  {
-    return p1.family_ == p2.family_ && p1.protocol_ == p2.protocol_;
-  }
+    /// Obtain an identifier for the protocol family.
+    int family() const noexcept
+    {
+        return family_;
+    }
 
-  /// Compare two protocols for inequality.
-  friend bool operator!=(const raw_protocol& p1, const raw_protocol& p2)
-  {
-    return !(p1 == p2);
-  }
+    /// Compare two protocols for equality.
+    friend bool operator==(const raw_protocol &p1, const raw_protocol &p2)
+    {
+        return p1.family_ == p2.family_ && p1.protocol_ == p2.protocol_;
+    }
 
-  /// The type of an endpoint.
-  typedef basic_endpoint<raw_protocol> endpoint;
+    /// Compare two protocols for inequality.
+    friend bool operator!=(const raw_protocol &p1, const raw_protocol &p2)
+    {
+        return !(p1 == p2);
+    }
 
-  /// The generic socket type.
-  typedef basic_raw_socket<raw_protocol> socket;
+    /// The type of an endpoint.
+    typedef basic_endpoint<raw_protocol> endpoint;
 
-private:
-  int family_;
-  int protocol_;
+    /// The generic socket type.
+    typedef basic_raw_socket<raw_protocol> socket;
+
+  private:
+    int family_;
+    int protocol_;
 };
 
 } // namespace generic

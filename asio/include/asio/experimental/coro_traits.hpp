@@ -13,7 +13,7 @@
 #define ASIO_EXPERIMENTAL_DETAIL_CORO_TRAITS_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -21,9 +21,12 @@
 #include <variant>
 #include "asio/any_io_executor.hpp"
 
-namespace asio {
-namespace experimental {
-namespace detail {
+namespace asio
+{
+namespace experimental
+{
+namespace detail
+{
 
 template <class From, class To>
 concept convertible_to = std::is_convertible_v<From, To>;
@@ -32,39 +35,41 @@ template <typename T>
 concept decays_to_executor = execution::executor<std::decay_t<T>>;
 
 template <typename T, typename Executor = any_io_executor>
-concept execution_context = requires (T& t)
+concept execution_context = requires(T &t)
 {
-  {t.get_executor()} -> convertible_to<Executor>;
+    {
+        t.get_executor()
+        } -> convertible_to<Executor>;
 };
 
 template <typename Yield, typename Return>
 struct coro_result
 {
-  using type = std::variant<Yield, Return>;
+    using type = std::variant<Yield, Return>;
 };
 
 template <typename Yield>
 struct coro_result<Yield, void>
 {
-  using type = std::optional<Yield>;
+    using type = std::optional<Yield>;
 };
 
 template <typename Return>
 struct coro_result<void, Return>
 {
-  using type = Return;
+    using type = Return;
 };
 
 template <typename YieldReturn>
 struct coro_result<YieldReturn, YieldReturn>
 {
-  using type = YieldReturn;
+    using type = YieldReturn;
 };
 
 template <>
 struct coro_result<void, void>
 {
-  using type = void;
+    using type = void;
 };
 
 template <typename Yield, typename Return>
@@ -76,25 +81,25 @@ struct coro_handler;
 template <>
 struct coro_handler<void, false>
 {
-  using type = void(std::exception_ptr);
+    using type = void(std::exception_ptr);
 };
 
 template <>
 struct coro_handler<void, true>
 {
-  using type = void();
+    using type = void();
 };
 
 template <typename T>
 struct coro_handler<T, false>
 {
-  using type = void(std::exception_ptr, T);
+    using type = void(std::exception_ptr, T);
 };
 
 template <typename T>
 struct coro_handler<T, true>
 {
-  using type = void(T);
+    using type = void(T);
 };
 
 template <typename Result, bool IsNoexcept>
@@ -113,31 +118,31 @@ using coro_handler_t = typename coro_handler<Result, IsNoexcept>::type;
 template <typename Yield, typename Return, typename Executor>
 struct coro_traits
 {
-  /// The value that can be passed into a symmetrical cororoutine. @c void if
-  /// asymmetrical.
-  using input_type = argument_dependent;
+    /// The value that can be passed into a symmetrical cororoutine. @c void if
+    /// asymmetrical.
+    using input_type = argument_dependent;
 
-  /// The type that can be passed out through a co_yield.
-  using yield_type = argument_dependent;
+    /// The type that can be passed out through a co_yield.
+    using yield_type = argument_dependent;
 
-  /// The type that can be passed out through a co_return.
-  using return_type = argument_dependent;
+    /// The type that can be passed out through a co_return.
+    using return_type = argument_dependent;
 
-  /// The type received by a co_await or async_resume. It's a combination of
-  /// yield and return.
-  using result_type = argument_dependent;
+    /// The type received by a co_await or async_resume. It's a combination of
+    /// yield and return.
+    using result_type = argument_dependent;
 
-  /// The signature used by the async_resume.
-  using signature_type = argument_dependent;
+    /// The signature used by the async_resume.
+    using signature_type = argument_dependent;
 
-  /// Whether or not the coroutine is noexcept.
-  constexpr static bool is_noexcept = argument_dependent;
+    /// Whether or not the coroutine is noexcept.
+    constexpr static bool is_noexcept = argument_dependent;
 
-  /// The error type of the coroutine. @c void for noexcept.
-  using error_type = argument_dependent;
+    /// The error type of the coroutine. @c void for noexcept.
+    using error_type = argument_dependent;
 
-  /// Completion handler type used by async_resume.
-  using completion_handler = argument_dependent;
+    /// Completion handler type used by async_resume.
+    using completion_handler = argument_dependent;
 };
 
 #else // defined(GENERATING_DOCUMENTATION)
@@ -145,79 +150,79 @@ struct coro_traits
 template <typename Yield, typename Return, typename Executor>
 struct coro_traits
 {
-  using input_type  = void;
-  using yield_type  = Yield;
-  using return_type = Return;
-  using result_type = detail::coro_result_t<yield_type, return_type>;
-  using signature_type = result_type();
-  constexpr static bool is_noexcept = false;
-  using error_type = std::conditional_t<is_noexcept, void, std::exception_ptr>;
-  using completion_handler = detail::coro_handler_t<result_type, is_noexcept>;
+    using input_type = void;
+    using yield_type = Yield;
+    using return_type = Return;
+    using result_type = detail::coro_result_t<yield_type, return_type>;
+    using signature_type = result_type();
+    constexpr static bool is_noexcept = false;
+    using error_type = std::conditional_t<is_noexcept, void, std::exception_ptr>;
+    using completion_handler = detail::coro_handler_t<result_type, is_noexcept>;
 };
 
 template <typename T, typename Return, typename Executor>
 struct coro_traits<T(), Return, Executor>
 {
-  using input_type = void;
-  using yield_type = T;
-  using return_type = Return;
-  using result_type = detail::coro_result_t<yield_type, return_type>;
-  using signature_type = result_type();
-  constexpr static bool is_noexcept = false;
-  using error_type = std::conditional_t<is_noexcept, void, std::exception_ptr>;
-  using completion_handler = detail::coro_handler_t<result_type, is_noexcept>;
+    using input_type = void;
+    using yield_type = T;
+    using return_type = Return;
+    using result_type = detail::coro_result_t<yield_type, return_type>;
+    using signature_type = result_type();
+    constexpr static bool is_noexcept = false;
+    using error_type = std::conditional_t<is_noexcept, void, std::exception_ptr>;
+    using completion_handler = detail::coro_handler_t<result_type, is_noexcept>;
 };
 
 template <typename T, typename Return, typename Executor>
 struct coro_traits<T() noexcept, Return, Executor>
 {
-  using input_type = void;
-  using yield_type = T;
-  using return_type = Return;
-  using result_type = detail::coro_result_t<yield_type, return_type>;
-  using signature_type = result_type();
-  constexpr static bool is_noexcept = true;
-  using error_type = std::conditional_t<is_noexcept, void, std::exception_ptr>;
-  using completion_handler = detail::coro_handler_t<result_type, is_noexcept>;
+    using input_type = void;
+    using yield_type = T;
+    using return_type = Return;
+    using result_type = detail::coro_result_t<yield_type, return_type>;
+    using signature_type = result_type();
+    constexpr static bool is_noexcept = true;
+    using error_type = std::conditional_t<is_noexcept, void, std::exception_ptr>;
+    using completion_handler = detail::coro_handler_t<result_type, is_noexcept>;
 };
 
 template <typename T, typename U, typename Return, typename Executor>
 struct coro_traits<T(U), Return, Executor>
 {
-  using input_type = U;
-  using yield_type = T;
-  using return_type = Return;
-  using result_type = detail::coro_result_t<yield_type, return_type>;
-  using signature_type = result_type(input_type);
-  constexpr static bool is_noexcept = false;
-  using error_type = std::conditional_t<is_noexcept, void, std::exception_ptr>;
-  using completion_handler = detail::coro_handler_t<result_type, is_noexcept>;
+    using input_type = U;
+    using yield_type = T;
+    using return_type = Return;
+    using result_type = detail::coro_result_t<yield_type, return_type>;
+    using signature_type = result_type(input_type);
+    constexpr static bool is_noexcept = false;
+    using error_type = std::conditional_t<is_noexcept, void, std::exception_ptr>;
+    using completion_handler = detail::coro_handler_t<result_type, is_noexcept>;
 };
 
 template <typename T, typename U, typename Return, typename Executor>
 struct coro_traits<T(U) noexcept, Return, Executor>
 {
-  using input_type = U;
-  using yield_type = T;
-  using return_type = Return;
-  using result_type = detail::coro_result_t<yield_type, return_type>;
-  using signature_type = result_type(input_type);
-  constexpr static bool is_noexcept = true;
-  using error_type = std::conditional_t<is_noexcept, void, std::exception_ptr>;
-  using completion_handler = detail::coro_handler_t<result_type, is_noexcept>;
+    using input_type = U;
+    using yield_type = T;
+    using return_type = Return;
+    using result_type = detail::coro_result_t<yield_type, return_type>;
+    using signature_type = result_type(input_type);
+    constexpr static bool is_noexcept = true;
+    using error_type = std::conditional_t<is_noexcept, void, std::exception_ptr>;
+    using completion_handler = detail::coro_handler_t<result_type, is_noexcept>;
 };
 
 template <typename Executor>
 struct coro_traits<void() noexcept, void, Executor>
 {
-  using input_type = void;
-  using yield_type = void;
-  using return_type = void;
-  using result_type = detail::coro_result_t<yield_type, return_type>;
-  using signature_type = result_type(input_type);
-  constexpr static bool is_noexcept = true;
-  using error_type = std::conditional_t<is_noexcept, void, std::exception_ptr>;
-  using completion_handler = detail::coro_handler_t<result_type, is_noexcept>;
+    using input_type = void;
+    using yield_type = void;
+    using return_type = void;
+    using result_type = detail::coro_result_t<yield_type, return_type>;
+    using signature_type = result_type(input_type);
+    constexpr static bool is_noexcept = true;
+    using error_type = std::conditional_t<is_noexcept, void, std::exception_ptr>;
+    using completion_handler = detail::coro_handler_t<result_type, is_noexcept>;
 };
 
 #endif // defined(GENERATING_DOCUMENTATION)

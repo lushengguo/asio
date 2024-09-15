@@ -12,7 +12,7 @@
 #define ASIO_DETAIL_RESOLVE_OP_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -21,20 +21,21 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace detail {
+namespace asio
+{
+namespace detail
+{
 
 class resolve_op : public operation
 {
-public:
-  // The error code to be passed to the completion handler.
-  asio::error_code ec_;
+  public:
+    // The error code to be passed to the completion handler.
+    asio::error_code ec_;
 
-protected:
-  resolve_op(func_type complete_func)
-    : operation(complete_func)
-  {
-  }
+  protected:
+    resolve_op(func_type complete_func) : operation(complete_func)
+    {
+    }
 };
 
 } // namespace detail

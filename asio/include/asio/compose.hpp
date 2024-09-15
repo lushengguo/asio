@@ -12,7 +12,7 @@
 #define ASIO_COMPOSE_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -20,7 +20,8 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio
+{
 
 /// Launch an asynchronous operation with a stateful implementation.
 /**
@@ -104,21 +105,18 @@ namespace asio {
  *       token, socket);
  * } @endcode
  */
-template <typename CompletionToken, typename Signature,
-    typename Implementation, typename... IoObjectsOrExecutors>
-inline auto async_compose(Implementation&& implementation,
-    type_identity_t<CompletionToken>& token,
-    IoObjectsOrExecutors&&... io_objects_or_executors)
-  -> decltype(
-    async_initiate<CompletionToken, Signature>(
-      composed<Signature>(static_cast<Implementation&&>(implementation),
-        static_cast<IoObjectsOrExecutors&&>(io_objects_or_executors)...),
-      token))
+template <typename CompletionToken, typename Signature, typename Implementation, typename... IoObjectsOrExecutors>
+inline auto async_compose(Implementation &&implementation, type_identity_t<CompletionToken> &token,
+                          IoObjectsOrExecutors &&...io_objects_or_executors)
+    -> decltype(async_initiate<CompletionToken, Signature>(
+        composed<Signature>(static_cast<Implementation &&>(implementation),
+                            static_cast<IoObjectsOrExecutors &&>(io_objects_or_executors)...),
+        token))
 {
-  return async_initiate<CompletionToken, Signature>(
-      composed<Signature>(static_cast<Implementation&&>(implementation),
-        static_cast<IoObjectsOrExecutors&&>(io_objects_or_executors)...),
-      token);
+    return async_initiate<CompletionToken, Signature>(
+        composed<Signature>(static_cast<Implementation &&>(implementation),
+                            static_cast<IoObjectsOrExecutors &&>(io_objects_or_executors)...),
+        token);
 }
 
 } // namespace asio

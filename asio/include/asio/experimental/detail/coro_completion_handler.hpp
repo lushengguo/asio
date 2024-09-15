@@ -13,7 +13,7 @@
 #define ASIO_EXPERIMENTAL_DETAIL_CORO_COMPLETION_HANDLER_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-# pragma once
+#pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -22,51 +22,52 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace experimental {
-namespace detail {
+namespace asio
+{
+namespace experimental
+{
+namespace detail
+{
 
 template <typename Promise, typename... Args>
 struct coro_completion_handler
 {
-  coro_completion_handler(coroutine_handle<Promise> h,
-      std::optional<std::tuple<Args...>>& result)
-    : self(h),
-      result(result)
-  {
-  }
+    coro_completion_handler(coroutine_handle<Promise> h, std::optional<std::tuple<Args...>> &result)
+        : self(h), result(result)
+    {
+    }
 
-  coro_completion_handler(coro_completion_handler&&) = default;
+    coro_completion_handler(coro_completion_handler &&) = default;
 
-  coroutine_handle<Promise> self;
+    coroutine_handle<Promise> self;
 
-  std::optional<std::tuple<Args...>>& result;
+    std::optional<std::tuple<Args...>> &result;
 
-  using promise_type = Promise;
+    using promise_type = Promise;
 
-  void operator()(Args... args)
-  {
-    result.emplace(std::move(args)...);
-    self.resume();
-  }
+    void operator()(Args... args)
+    {
+        result.emplace(std::move(args)...);
+        self.resume();
+    }
 
-  using allocator_type = typename promise_type::allocator_type;
-  allocator_type get_allocator() const noexcept
-  {
-    return self.promise().get_allocator();
-  }
+    using allocator_type = typename promise_type::allocator_type;
+    allocator_type get_allocator() const noexcept
+    {
+        return self.promise().get_allocator();
+    }
 
-  using executor_type = typename promise_type::executor_type;
-  executor_type get_executor() const noexcept
-  {
-    return self.promise().get_executor();
-  }
+    using executor_type = typename promise_type::executor_type;
+    executor_type get_executor() const noexcept
+    {
+        return self.promise().get_executor();
+    }
 
-  using cancellation_slot_type = typename promise_type::cancellation_slot_type;
-  cancellation_slot_type get_cancellation_slot() const noexcept
-  {
-    return self.promise().get_cancellation_slot();
-  }
+    using cancellation_slot_type = typename promise_type::cancellation_slot_type;
+    cancellation_slot_type get_cancellation_slot() const noexcept
+    {
+        return self.promise().get_cancellation_slot();
+    }
 };
 
 template <typename Signature>
@@ -75,89 +76,75 @@ struct coro_completion_handler_type;
 template <typename... Args>
 struct coro_completion_handler_type<void(Args...)>
 {
-  using type = std::tuple<Args...>;
+    using type = std::tuple<Args...>;
 
-  template <typename Promise>
-  using completion_handler = coro_completion_handler<Promise, Args...>;
+    template <typename Promise>
+    using completion_handler = coro_completion_handler<Promise, Args...>;
 };
 
 template <typename Signature>
-using coro_completion_handler_type_t =
-  typename coro_completion_handler_type<Signature>::type;
+using coro_completion_handler_type_t = typename coro_completion_handler_type<Signature>::type;
 
-inline void coro_interpret_result(std::tuple<>&&)
+inline void coro_interpret_result(std::tuple<> &&)
 {
 }
 
 template <typename... Args>
-inline auto coro_interpret_result(std::tuple<Args...>&& args)
+inline auto coro_interpret_result(std::tuple<Args...> &&args)
 {
-  return std::move(args);
+    return std::move(args);
 }
 
 template <typename... Args>
-auto coro_interpret_result(std::tuple<std::exception_ptr, Args...>&& args)
+auto coro_interpret_result(std::tuple<std::exception_ptr, Args...> &&args)
 {
-  if (std::get<0>(args))
-    std::rethrow_exception(std::get<0>(args));
+    if (std::get<0>(args))
+        std::rethrow_exception(std::get<0>(args));
 
-  return std::apply(
-      [](auto, auto&&... rest)
-      {
-        return std::make_tuple(std::move(rest)...);
-      }, std::move(args));
+    return std::apply([](auto, auto &&...rest) { return std::make_tuple(std::move(rest)...); }, std::move(args));
 }
 
 template <typename... Args>
-auto coro_interpret_result(
-    std::tuple<asio::error_code, Args...>&& args)
+auto coro_interpret_result(std::tuple<asio::error_code, Args...> &&args)
 {
-  if (std::get<0>(args))
-    asio::detail::throw_exception(
-        asio::system_error(std::get<0>(args)));
+    if (std::get<0>(args))
+        asio::detail::throw_exception(asio::system_error(std::get<0>(args)));
 
-  return std::apply(
-      [](auto, auto&&... rest)
-      {
-        return std::make_tuple(std::move(rest)...);
-      }, std::move(args));
-}
-
-template <typename  Arg>
-inline auto coro_interpret_result(std::tuple<Arg>&& args)
-{
-  return std::get<0>(std::move(args));
+    return std::apply([](auto, auto &&...rest) { return std::make_tuple(std::move(rest)...); }, std::move(args));
 }
 
 template <typename Arg>
-auto coro_interpret_result(std::tuple<std::exception_ptr, Arg>&& args)
+inline auto coro_interpret_result(std::tuple<Arg> &&args)
 {
-  if (std::get<0>(args))
-    std::rethrow_exception(std::get<0>(args));
-  return std::get<1>(std::move(args));
-}
-
-inline auto coro_interpret_result(
-    std::tuple<asio::error_code>&& args)
-{
-  if (std::get<0>(args))
-    asio::detail::throw_exception(
-        asio::system_error(std::get<0>(args)));
-}
-
-inline auto coro_interpret_result(std::tuple<std::exception_ptr>&& args)
-{
-  if (std::get<0>(args))
-    std::rethrow_exception(std::get<0>(args));
+    return std::get<0>(std::move(args));
 }
 
 template <typename Arg>
-auto coro_interpret_result(std::tuple<asio::error_code, Arg>&& args)
+auto coro_interpret_result(std::tuple<std::exception_ptr, Arg> &&args)
 {
-  if (std::get<0>(args))
-    asio::detail::throw_exception(
-        asio::system_error(std::get<0>(args)));
-  return std::get<1>(std::move(args));
+    if (std::get<0>(args))
+        std::rethrow_exception(std::get<0>(args));
+    return std::get<1>(std::move(args));
+}
+
+inline auto coro_interpret_result(std::tuple<asio::error_code> &&args)
+{
+    if (std::get<0>(args))
+        asio::detail::throw_exception(asio::system_error(std::get<0>(args)));
+}
+
+inline auto coro_interpret_result(std::tuple<std::exception_ptr> &&args)
+{
+    if (std::get<0>(args))
+        std::rethrow_exception(std::get<0>(args));
+}
+
+template <typename Arg>
+auto coro_interpret_result(std::tuple<asio::error_code, Arg> &&args)
+{
+    if (std::get<0>(args))
+        asio::detail::throw_exception(asio::system_error(std::get<0>(args)));
+    return std::get<1>(std::move(args));
 }
 
 } // namespace detail

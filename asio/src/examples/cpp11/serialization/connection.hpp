@@ -22,7 +22,8 @@
 #include <tuple>
 #include <vector>
 
-namespace s11n_example {
+namespace s11n_example
+{
 
 /// The connection class provides serialization primitives on top of a socket.
 /**
@@ -33,148 +34,142 @@ namespace s11n_example {
  */
 class connection
 {
-public:
-  /// Constructor.
-  connection(const asio::any_io_executor& ex)
-    : socket_(ex)
-  {
-  }
-
-  /// Get the underlying socket. Used for making a connection or for accepting
-  /// an incoming connection.
-  asio::ip::tcp::socket& socket()
-  {
-    return socket_;
-  }
-
-  /// Asynchronously write a data structure to the socket.
-  template <typename T, typename Handler>
-  void async_write(const T& t, Handler handler)
-  {
-    // Serialize the data first so we know how large it is.
-    std::ostringstream archive_stream;
-    boost::archive::text_oarchive archive(archive_stream);
-    archive << t;
-    outbound_data_ = archive_stream.str();
-
-    // Format the header.
-    std::ostringstream header_stream;
-    header_stream << std::setw(header_length)
-      << std::hex << outbound_data_.size();
-    if (!header_stream || header_stream.str().size() != header_length)
+  public:
+    /// Constructor.
+    connection(const asio::any_io_executor &ex) : socket_(ex)
     {
-      // Something went wrong, inform the caller.
-      std::error_code error(asio::error::invalid_argument);
-      asio::post(socket_.get_executor(), std::bind(handler, error));
-      return;
     }
-    outbound_header_ = header_stream.str();
 
-    // Write the serialized data to the socket. We use "gather-write" to send
-    // both the header and the data in a single write operation.
-    std::vector<asio::const_buffer> buffers;
-    buffers.push_back(asio::buffer(outbound_header_));
-    buffers.push_back(asio::buffer(outbound_data_));
-    asio::async_write(socket_, buffers, handler);
-  }
-
-  /// Asynchronously read a data structure from the socket.
-  template <typename T, typename Handler>
-  void async_read(T& t, Handler handler)
-  {
-    // Issue a read operation to read exactly the number of bytes in a header.
-    void (connection::*f)(const std::error_code&, T&, std::tuple<Handler>)
-      = &connection::handle_read_header<T, Handler>;
-    asio::async_read(socket_, asio::buffer(inbound_header_),
-        std::bind(f,
-          this, asio::placeholders::error, std::ref(t),
-          std::make_tuple(handler)));
-  }
-
-  /// Handle a completed read of a message header.
-  template <typename T, typename Handler>
-  void handle_read_header(const std::error_code& e,
-      T& t, std::tuple<Handler> handler)
-  {
-    if (e)
+    /// Get the underlying socket. Used for making a connection or for accepting
+    /// an incoming connection.
+    asio::ip::tcp::socket &socket()
     {
-      std::get<0>(handler)(e);
+        return socket_;
     }
-    else
+
+    /// Asynchronously write a data structure to the socket.
+    template <typename T, typename Handler>
+    void async_write(const T &t, Handler handler)
     {
-      // Determine the length of the serialized data.
-      std::istringstream is(std::string(inbound_header_, header_length));
-      std::size_t inbound_data_size = 0;
-      if (!(is >> std::hex >> inbound_data_size))
-      {
-        // Header doesn't seem to be valid. Inform the caller.
-        std::error_code error(asio::error::invalid_argument);
-        std::get<0>(handler)(error);
-        return;
-      }
+        // Serialize the data first so we know how large it is.
+        std::ostringstream archive_stream;
+        boost::archive::text_oarchive archive(archive_stream);
+        archive << t;
+        outbound_data_ = archive_stream.str();
 
-      // Start an asynchronous call to receive the data.
-      inbound_data_.resize(inbound_data_size);
-      void (connection::*f)(
-          const std::error_code&,
-          T&, std::tuple<Handler>)
-        = &connection::handle_read_data<T, Handler>;
-      asio::async_read(socket_, asio::buffer(inbound_data_),
-        std::bind(f, this,
-          asio::placeholders::error, std::ref(t), handler));
+        // Format the header.
+        std::ostringstream header_stream;
+        header_stream << std::setw(header_length) << std::hex << outbound_data_.size();
+        if (!header_stream || header_stream.str().size() != header_length)
+        {
+            // Something went wrong, inform the caller.
+            std::error_code error(asio::error::invalid_argument);
+            asio::post(socket_.get_executor(), std::bind(handler, error));
+            return;
+        }
+        outbound_header_ = header_stream.str();
+
+        // Write the serialized data to the socket. We use "gather-write" to send
+        // both the header and the data in a single write operation.
+        std::vector<asio::const_buffer> buffers;
+        buffers.push_back(asio::buffer(outbound_header_));
+        buffers.push_back(asio::buffer(outbound_data_));
+        asio::async_write(socket_, buffers, handler);
     }
-  }
 
-  /// Handle a completed read of message data.
-  template <typename T, typename Handler>
-  void handle_read_data(const std::error_code& e,
-      T& t, std::tuple<Handler> handler)
-  {
-    if (e)
+    /// Asynchronously read a data structure from the socket.
+    template <typename T, typename Handler>
+    void async_read(T &t, Handler handler)
     {
-      std::get<0>(handler)(e);
+        // Issue a read operation to read exactly the number of bytes in a header.
+        void (connection::*f)(const std::error_code &, T &, std::tuple<Handler>) =
+            &connection::handle_read_header<T, Handler>;
+        asio::async_read(socket_, asio::buffer(inbound_header_),
+                         std::bind(f, this, asio::placeholders::error, std::ref(t), std::make_tuple(handler)));
     }
-    else
+
+    /// Handle a completed read of a message header.
+    template <typename T, typename Handler>
+    void handle_read_header(const std::error_code &e, T &t, std::tuple<Handler> handler)
     {
-      // Extract the data structure from the data just received.
-      try
-      {
-        std::string archive_data(&inbound_data_[0], inbound_data_.size());
-        std::istringstream archive_stream(archive_data);
-        boost::archive::text_iarchive archive(archive_stream);
-        archive >> t;
-      }
-      catch (std::exception& e)
-      {
-        // Unable to decode data.
-        std::error_code error(asio::error::invalid_argument);
-        std::get<0>(handler)(error);
-        return;
-      }
+        if (e)
+        {
+            std::get<0>(handler)(e);
+        }
+        else
+        {
+            // Determine the length of the serialized data.
+            std::istringstream is(std::string(inbound_header_, header_length));
+            std::size_t inbound_data_size = 0;
+            if (!(is >> std::hex >> inbound_data_size))
+            {
+                // Header doesn't seem to be valid. Inform the caller.
+                std::error_code error(asio::error::invalid_argument);
+                std::get<0>(handler)(error);
+                return;
+            }
 
-      // Inform caller that data has been received ok.
-      std::get<0>(handler)(e);
+            // Start an asynchronous call to receive the data.
+            inbound_data_.resize(inbound_data_size);
+            void (connection::*f)(const std::error_code &, T &, std::tuple<Handler>) =
+                &connection::handle_read_data<T, Handler>;
+            asio::async_read(socket_, asio::buffer(inbound_data_),
+                             std::bind(f, this, asio::placeholders::error, std::ref(t), handler));
+        }
     }
-  }
 
-private:
-  /// The underlying socket.
-  asio::ip::tcp::socket socket_;
+    /// Handle a completed read of message data.
+    template <typename T, typename Handler>
+    void handle_read_data(const std::error_code &e, T &t, std::tuple<Handler> handler)
+    {
+        if (e)
+        {
+            std::get<0>(handler)(e);
+        }
+        else
+        {
+            // Extract the data structure from the data just received.
+            try
+            {
+                std::string archive_data(&inbound_data_[0], inbound_data_.size());
+                std::istringstream archive_stream(archive_data);
+                boost::archive::text_iarchive archive(archive_stream);
+                archive >> t;
+            }
+            catch (std::exception &e)
+            {
+                // Unable to decode data.
+                std::error_code error(asio::error::invalid_argument);
+                std::get<0>(handler)(error);
+                return;
+            }
 
-  /// The size of a fixed length header.
-  enum { header_length = 8 };
+            // Inform caller that data has been received ok.
+            std::get<0>(handler)(e);
+        }
+    }
 
-  /// Holds an outbound header.
-  std::string outbound_header_;
+  private:
+    /// The underlying socket.
+    asio::ip::tcp::socket socket_;
 
-  /// Holds the outbound data.
-  std::string outbound_data_;
+    /// The size of a fixed length header.
+    enum
+    {
+        header_length = 8
+    };
 
-  /// Holds an inbound header.
-  char inbound_header_[header_length];
+    /// Holds an outbound header.
+    std::string outbound_header_;
 
-  /// Holds the inbound data.
-  std::vector<char> inbound_data_;
+    /// Holds the outbound data.
+    std::string outbound_data_;
+
+    /// Holds an inbound header.
+    char inbound_header_[header_length];
+
+    /// Holds the inbound data.
+    std::vector<char> inbound_data_;
 };
 
 typedef std::shared_ptr<connection> connection_ptr;

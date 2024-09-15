@@ -17,19 +17,16 @@
 #include <asio/error.hpp>
 #include <chrono>
 
-void async_sleep_impl(
-    asio::any_completion_handler<void(std::error_code)> handler,
-    asio::any_io_executor ex, std::chrono::nanoseconds duration);
+void async_sleep_impl(asio::any_completion_handler<void(std::error_code)> handler, asio::any_io_executor ex,
+                      std::chrono::nanoseconds duration);
 
 template <typename CompletionToken>
-inline auto async_sleep(asio::any_io_executor ex,
-    std::chrono::nanoseconds duration, CompletionToken&& token)
-  -> decltype(
-      asio::async_initiate<CompletionToken, void(std::error_code)>(
-        async_sleep_impl, token, std::move(ex), duration))
+inline auto async_sleep(asio::any_io_executor ex, std::chrono::nanoseconds duration, CompletionToken &&token)
+    -> decltype(asio::async_initiate<CompletionToken, void(std::error_code)>(async_sleep_impl, token, std::move(ex),
+                                                                             duration))
 {
-  return asio::async_initiate<CompletionToken, void(std::error_code)>(
-      async_sleep_impl, token, std::move(ex), duration);
+    return asio::async_initiate<CompletionToken, void(std::error_code)>(async_sleep_impl, token, std::move(ex),
+                                                                        duration);
 }
 
 #endif // SLEEP_HPP

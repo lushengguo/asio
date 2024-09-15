@@ -13,40 +13,41 @@
 
 #include <cstddef>
 
-namespace archetypes {
+namespace archetypes
+{
 
 template <typename PointerType>
 class gettable_socket_option
 {
-public:
-  template <typename Protocol>
-  int level(const Protocol&) const
-  {
-    return 0;
-  }
+  public:
+    template <typename Protocol>
+    int level(const Protocol &) const
+    {
+        return 0;
+    }
 
-  template <typename Protocol>
-  int name(const Protocol&) const
-  {
-    return 0;
-  }
+    template <typename Protocol>
+    int name(const Protocol &) const
+    {
+        return 0;
+    }
 
-  template <typename Protocol>
-  PointerType* data(const Protocol&)
-  {
-    return 0;
-  }
+    template <typename Protocol>
+    PointerType *data(const Protocol &)
+    {
+        return 0;
+    }
 
-  template <typename Protocol>
-  std::size_t size(const Protocol&) const
-  {
-    return 0;
-  }
+    template <typename Protocol>
+    std::size_t size(const Protocol &) const
+    {
+        return 0;
+    }
 
-  template <typename Protocol>
-  void resize(const Protocol&, std::size_t)
-  {
-  }
+    template <typename Protocol>
+    void resize(const Protocol &, std::size_t)
+    {
+    }
 };
 
 } // namespace archetypes
