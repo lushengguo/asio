@@ -12,7 +12,7 @@
 #define ASIO_SYSTEM_CONTEXT_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-#pragma once
+# pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -23,57 +23,59 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio
-{
+namespace asio {
 
-template <typename Blocking, typename Relationship, typename Allocator> class basic_system_executor;
+template <typename Blocking, typename Relationship, typename Allocator>
+class basic_system_executor;
 
 /// The executor context for the system executor.
 class system_context : public execution_context
 {
-  public:
-    /// The executor type associated with the context.
-    typedef basic_system_executor<execution::blocking_t::possibly_t, execution::relationship_t::fork_t,
-                                  std::allocator<void>>
-        executor_type;
+public:
+  /// The executor type associated with the context.
+  typedef basic_system_executor<
+      execution::blocking_t::possibly_t,
+      execution::relationship_t::fork_t,
+      std::allocator<void>
+    > executor_type;
 
-    /// Destructor shuts down all threads in the system thread pool.
-    ASIO_DECL ~system_context();
+  /// Destructor shuts down all threads in the system thread pool.
+  ASIO_DECL ~system_context();
 
-    /// Obtain an executor for the context.
-    executor_type get_executor() noexcept;
+  /// Obtain an executor for the context.
+  executor_type get_executor() noexcept;
 
-    /// Signal all threads in the system thread pool to stop.
-    ASIO_DECL void stop();
+  /// Signal all threads in the system thread pool to stop.
+  ASIO_DECL void stop();
 
-    /// Determine whether the system thread pool has been stopped.
-    ASIO_DECL bool stopped() const noexcept;
+  /// Determine whether the system thread pool has been stopped.
+  ASIO_DECL bool stopped() const noexcept;
 
-    /// Join all threads in the system thread pool.
-    ASIO_DECL void join();
+  /// Join all threads in the system thread pool.
+  ASIO_DECL void join();
 
 #if defined(GENERATING_DOCUMENTATION)
-  private:
+private:
 #endif // defined(GENERATING_DOCUMENTATION)
-    // Constructor creates all threads in the system thread pool.
-    ASIO_DECL system_context();
+  // Constructor creates all threads in the system thread pool.
+  ASIO_DECL system_context();
 
-  private:
-    template <typename, typename, typename> friend class basic_system_executor;
+private:
+  template <typename, typename, typename> friend class basic_system_executor;
 
-    struct thread_function;
+  struct thread_function;
 
-    // Helper function to create the underlying scheduler.
-    ASIO_DECL detail::scheduler &add_scheduler(detail::scheduler *s);
+  // Helper function to create the underlying scheduler.
+  ASIO_DECL detail::scheduler& add_scheduler(detail::scheduler* s);
 
-    // The underlying scheduler.
-    detail::scheduler &scheduler_;
+  // The underlying scheduler.
+  detail::scheduler& scheduler_;
 
-    // The threads in the system thread pool.
-    detail::thread_group threads_;
+  // The threads in the system thread pool.
+  detail::thread_group threads_;
 
-    // The number of threads in the pool.
-    std::size_t num_threads_;
+  // The number of threads in the pool.
+  std::size_t num_threads_;
 };
 
 } // namespace asio
@@ -82,7 +84,7 @@ class system_context : public execution_context
 
 #include "asio/impl/system_context.hpp"
 #if defined(ASIO_HEADER_ONLY)
-#include "asio/impl/system_context.ipp"
+# include "asio/impl/system_context.ipp"
 #endif // defined(ASIO_HEADER_ONLY)
 
 #endif // ASIO_SYSTEM_CONTEXT_HPP

@@ -12,15 +12,13 @@
 #define ASIO_DETAIL_TIMER_SCHEDULER_FWD_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-#pragma once
+# pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
 
-namespace asio
-{
-namespace detail
-{
+namespace asio {
+namespace detail {
 
 #if defined(ASIO_WINDOWS_RUNTIME)
 typedef class winrt_timer_scheduler timer_scheduler;

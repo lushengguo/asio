@@ -12,7 +12,7 @@
 #define ASIO_STREAMBUF_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-#pragma once
+# pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -21,8 +21,7 @@
 
 #include "asio/basic_streambuf.hpp"
 
-namespace asio
-{
+namespace asio {
 
 /// Typedef for the typical usage of basic_streambuf.
 typedef basic_streambuf<> streambuf;

@@ -12,7 +12,7 @@
 #define ASIO_SSL_DETAIL_SHUTDOWN_OP_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-#pragma once
+# pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
@@ -21,42 +21,43 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio
-{
-namespace ssl
-{
-namespace detail
-{
+namespace asio {
+namespace ssl {
+namespace detail {
 
 class shutdown_op
 {
-  public:
-    static constexpr const char *tracking_name()
-    {
-        return "ssl::stream<>::async_shutdown";
-    }
+public:
+  static constexpr const char* tracking_name()
+  {
+    return "ssl::stream<>::async_shutdown";
+  }
 
-    engine::want operator()(engine &eng, asio::error_code &ec, std::size_t &bytes_transferred) const
-    {
-        bytes_transferred = 0;
-        return eng.shutdown(ec);
-    }
+  engine::want operator()(engine& eng,
+      asio::error_code& ec,
+      std::size_t& bytes_transferred) const
+  {
+    bytes_transferred = 0;
+    return eng.shutdown(ec);
+  }
 
-    template <typename Handler>
-    void call_handler(Handler &handler, const asio::error_code &ec, const std::size_t &) const
+  template <typename Handler>
+  void call_handler(Handler& handler,
+      const asio::error_code& ec,
+      const std::size_t&) const
+  {
+    if (ec == asio::error::eof)
     {
-        if (ec == asio::error::eof)
-        {
-            // The engine only generates an eof when the shutdown notification has
-            // been received from the peer. This indicates that the shutdown has
-            // completed successfully, and thus need not be passed on to the handler.
-            static_cast<Handler &&>(handler)(asio::error_code());
-        }
-        else
-        {
-            static_cast<Handler &&>(handler)(ec);
-        }
+      // The engine only generates an eof when the shutdown notification has
+      // been received from the peer. This indicates that the shutdown has
+      // completed successfully, and thus need not be passed on to the handler.
+      static_cast<Handler&&>(handler)(asio::error_code());
     }
+    else
+    {
+      static_cast<Handler&&>(handler)(ec);
+    }
+  }
 };
 
 } // namespace detail

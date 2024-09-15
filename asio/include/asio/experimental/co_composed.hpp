@@ -12,18 +12,16 @@
 #define ASIO_EXPERIMENTAL_CO_COMPOSED_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-#pragma once
+# pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
-#include "asio/co_composed.hpp"
 #include "asio/detail/config.hpp"
+#include "asio/co_composed.hpp"
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio
-{
-namespace experimental
-{
+namespace asio {
+namespace experimental {
 
 using asio::co_composed;
 

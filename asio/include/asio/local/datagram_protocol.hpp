@@ -12,12 +12,13 @@
 #define ASIO_LOCAL_DATAGRAM_PROTOCOL_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
-#pragma once
+# pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
 
-#if defined(ASIO_HAS_LOCAL_SOCKETS) || defined(GENERATING_DOCUMENTATION)
+#if defined(ASIO_HAS_LOCAL_SOCKETS) \
+  || defined(GENERATING_DOCUMENTATION)
 
 #include "asio/basic_datagram_socket.hpp"
 #include "asio/detail/socket_types.hpp"
@@ -25,10 +26,8 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio
-{
-namespace local
-{
+namespace asio {
+namespace local {
 
 /// Encapsulates the flags needed for datagram-oriented UNIX sockets.
 /**
@@ -44,30 +43,30 @@ namespace local
  */
 class datagram_protocol
 {
-  public:
-    /// Obtain an identifier for the type of the protocol.
-    int type() const noexcept
-    {
-        return SOCK_DGRAM;
-    }
+public:
+  /// Obtain an identifier for the type of the protocol.
+  int type() const noexcept
+  {
+    return SOCK_DGRAM;
+  }
 
-    /// Obtain an identifier for the protocol.
-    int protocol() const noexcept
-    {
-        return 0;
-    }
+  /// Obtain an identifier for the protocol.
+  int protocol() const noexcept
+  {
+    return 0;
+  }
 
-    /// Obtain an identifier for the protocol family.
-    int family() const noexcept
-    {
-        return AF_UNIX;
-    }
+  /// Obtain an identifier for the protocol family.
+  int family() const noexcept
+  {
+    return AF_UNIX;
+  }
 
-    /// The type of a UNIX domain endpoint.
-    typedef basic_endpoint<datagram_protocol> endpoint;
+  /// The type of a UNIX domain endpoint.
+  typedef basic_endpoint<datagram_protocol> endpoint;
 
-    /// The UNIX domain socket type.
-    typedef basic_datagram_socket<datagram_protocol> socket;
+  /// The UNIX domain socket type.
+  typedef basic_datagram_socket<datagram_protocol> socket;
 };
 
 } // namespace local

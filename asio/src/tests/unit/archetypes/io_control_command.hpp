@@ -11,21 +11,20 @@
 #ifndef ARCHETYPES_IO_CONTROL_COMMAND_HPP
 #define ARCHETYPES_IO_CONTROL_COMMAND_HPP
 
-namespace archetypes
-{
+namespace archetypes {
 
 class io_control_command
 {
-  public:
-    int name() const
-    {
-        return 0;
-    }
+public:
+  int name() const
+  {
+    return 0;
+  }
 
-    void *data()
-    {
-        return 0;
-    }
+  void* data()
+  {
+    return 0;
+  }
 };
 
 } // namespace archetypes

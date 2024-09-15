@@ -14,8 +14,7 @@
 #include "basic_logger.hpp"
 #include "logger_service.hpp"
 
-namespace services
-{
+namespace services {
 
 /// Typedef for typical logger usage.
 typedef basic_logger<logger_service> logger;
